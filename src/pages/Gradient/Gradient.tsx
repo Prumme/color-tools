@@ -13,6 +13,7 @@ import {
     CardTitle
 } from "@/components/ui/card";
 import Linear from "./Linear";
+import Radial from "./Radial";
 
 interface Color {
     color: string
@@ -48,54 +49,79 @@ const Gradient = () => {
 
   return (
     <div className="flex p-12 gap-x-8">
-        <div className="grow">
-            <h1 className="text-3xl font-bold">Gradient generator</h1>
-            <p className="text-lg text-gray-500">Pick your colors to generate your gradient colors</p>
-            <div
-            className="w-full h-32 rounded-md mt-4"
-            style={{
-                background: gradientGenerator(),
+      <div className="grow">
+        <h1 className="text-3xl font-bold">Gradient generator</h1>
+        <p className="text-lg text-gray-500">
+          Pick your colors to generate your gradient colors
+        </p>
+        <div
+          className="w-full h-32 rounded-md mt-4"
+          style={{
+            background: gradientGenerator(),
+          }}
+        ></div>
+      </div>
+      <Card className="w-fit rounded-md">
+        <CardHeader>
+          <CardTitle>Gradient generator</CardTitle>
+          <CardDescription>
+            Pick your colors to generate your gradient colors
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs
+            defaultValue={type}
+            className="w-[400px]"
+            onValueChange={setType}
+          >
+            <TabsList>
+              <TabsTrigger value="linear">Linear</TabsTrigger>
+              <TabsTrigger value="radial">Radial</TabsTrigger>
+            </TabsList>
+            <TabsContent value="linear">
+              <Linear
+                angle={angle}
+                colors={colors}
+                selectedColor={selectedColor}
+                setAngle={setAngle}
+                setColors={setColors}
+                setSelectedColor={setSelectedColor}
+              />
+            </TabsContent>
+            <TabsContent value="radial">
+              <Radial />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+        <CardFooter className="flex gap-x-2">
+          <Button
+            variant="outline"
+            onClick={() =>
+              setColors([
+                ...colors,
+                { color: uniqolor.random().color, stop: 100 },
+              ])
+            }
+          >
+            Add color
+          </Button>
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `background: ${gradientGenerator()}`
+              );
+              toast({
+                title: "Success",
+                description: "The gradient has been copied to your clipboard",
+              });
             }}
-            >
-
-            </div>
-        </div>
-        <Card className="w-fit rounded-md">
-            <CardHeader>
-                <CardTitle>Gradient generator</CardTitle>
-                <CardDescription>Pick your colors to generate your gradient colors</CardDescription>
-            </CardHeader>
-            <CardContent>
-            <Tabs defaultValue={type} className="w-[400px]" onValueChange={setType}>
-                <TabsList>
-                    <TabsTrigger value="linear">Linear</TabsTrigger>
-                    <TabsTrigger value="radial">Radial</TabsTrigger>
-                </TabsList>
-                <TabsContent value="linear">
-                    <Linear 
-                    angle={angle}
-                    colors={colors}
-                    selectedColor={selectedColor}
-                    setAngle={setAngle}
-                    setColors={setColors}
-                    setSelectedColor={setSelectedColor}
-                    />
-                </TabsContent>
-            </Tabs>
-            </CardContent>
-            <CardFooter className="flex gap-x-2">
-                <Button variant="outline" onClick={() => setColors([...colors, {color: uniqolor.random().color, stop: 100}])}>Add color</Button>
-                <Button onClick={() =>{
-                   navigator.clipboard.writeText(`background: ${gradientGenerator()}`);
-                   toast({
-                    title: "Success",
-                    description: "The gradient has been copied to your clipboard",
-                  })
-                } }>Copy</Button>
-            </CardFooter>
-        </Card>
+          >
+            Copy
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
-  )
+  );
 }
 
 export default Gradient
