@@ -15,10 +15,19 @@ import {
 import Linear from "./Linear";
 import Radial from "./Radial";
 import { MdContentCopy } from "react-icons/md";
+import { FaHeart } from "react-icons/fa";
+import Favourite from "./Favourite";
 
 interface Color {
   color: string;
   stop: number;
+}
+
+interface Favourite {
+  id: number;
+  type: string;
+  colors: Color[];
+  angle?: number;
 }
 
 const Gradient = () => {
@@ -39,13 +48,15 @@ const Gradient = () => {
   };
 
   const linearGradient = () => {
-    return `linear-gradient(${angle}deg, ${colors
+    return `linear-gradient(${angle}deg, ${[...colors]
+      .sort((a, b) => a.stop - b.stop)
       .map((color) => `${color.color} ${color.stop}%`)
       .join(", ")})`;
   };
 
   const radialGradient = () => {
-    return `radial-gradient(circle, ${colors
+    return `radial-gradient(circle, ${[...colors]
+      .sort((a, b) => a.stop - b.stop)
       .map((color) => `${color.color} ${color.stop}%`)
       .join(", ")})`;
   };
@@ -57,6 +68,17 @@ const Gradient = () => {
       (colors[colors.length - 1].stop + colors[colors.length - 2].stop) / 2
     );
   };
+
+  const getFavourites = (): Favourite[] => {
+    if (localStorage.getItem("favouritesGradients")) {
+      return (
+        JSON.parse(localStorage.getItem("favouritesGradients") || "") || []
+      );
+    }
+    return [];
+  };
+
+  const [favourites, setFavourites] = useState<Favourite[]>(getFavourites());
 
   return (
     <div className="flex p-12 gap-x-8">
@@ -88,6 +110,22 @@ const Gradient = () => {
             />
           </div>
         </Card>
+
+        <div>
+          <h2 className="text-2xl font-bold">Favourites</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-x-12">
+            {favourites.map((favourite, index) => (
+              <Favourite
+                key={index}
+                {...favourite}
+                setFavourites={setFavourites}
+                setAngle={setAngle}
+                setColors={setColors}
+                setType={setType}
+              />
+            ))}
+          </div>
+        </div>
       </div>
       <Card className="w-fit">
         <CardHeader>
@@ -121,30 +159,59 @@ const Gradient = () => {
             </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter className="flex gap-x-2">
+        <CardFooter className="flex justify-between gap-x-2">
+          <div className="flex gap-x-2">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setColors([
+                  ...colors,
+                  { color: uniqolor.random().color, stop: getNewStop() },
+                ])
+              }
+            >
+              Add color
+            </Button>
+            <Button
+              className="flex gap-x-2"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `background: ${gradientGenerator()};`
+                );
+                toast({
+                  title: "Success",
+                  description: "The gradient has been copied to your clipboard",
+                });
+              }}
+            >
+              Copy
+              <MdContentCopy />
+            </Button>
+          </div>
+
           <Button
-            variant="outline"
-            onClick={() =>
-              setColors([
-                ...colors,
-                { color: uniqolor.random().color, stop: getNewStop() },
-              ])
-            }
-          >
-            Add color
-          </Button>
-          <Button
+            className="flex gap-x-2 bg-pink-700 hover:bg-pink-800 text-white"
             onClick={() => {
-              navigator.clipboard.writeText(
-                `background: ${gradientGenerator()};`
+              const newFavourites = [
+                ...favourites,
+                {
+                  type,
+                  colors,
+                  id: favourites[favourites.length - 1]?.id + 1 || 0,
+                },
+              ];
+              setFavourites(newFavourites);
+              localStorage.setItem(
+                "favouritesGradients",
+                JSON.stringify(newFavourites)
               );
               toast({
                 title: "Success",
-                description: "The gradient has been copied to your clipboard",
+                description: "The gradient has been saved to your favourites",
               });
             }}
           >
-            Copy
+            Save <FaHeart />
           </Button>
         </CardFooter>
       </Card>
