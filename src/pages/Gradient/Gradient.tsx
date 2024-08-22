@@ -14,38 +14,49 @@ import {
 } from "@/components/ui/card";
 import Linear from "./Linear";
 import Radial from "./Radial";
+import { MdContentCopy } from "react-icons/md";
 
 interface Color {
-    color: string
-    stop: number
+  color: string;
+  stop: number;
 }
 
 const Gradient = () => {
-    const { toast } = useToast()
-    const [colors, setColors] = useState<Color[]>([
-        {color: uniqolor.random().color, stop: 0},
-        {color: uniqolor.random().color, stop: 50},
-        {color: uniqolor.random().color, stop: 100},
-    ]
+  const { toast } = useToast();
+  const [colors, setColors] = useState<Color[]>([
+    { color: uniqolor.random().color, stop: 0 },
+    { color: uniqolor.random().color, stop: 100 },
+  ]);
+  const [selectedColor, setSelectedColor] = useState(0);
+  const [angle, setAngle] = useState(90);
+  const [type, setType] = useState("linear");
+
+  const gradientGenerator = () => {
+    if (type === "linear") {
+      return linearGradient();
+    }
+    return radialGradient();
+  };
+
+  const linearGradient = () => {
+    return `linear-gradient(${angle}deg, ${colors
+      .map((color) => `${color.color} ${color.stop}%`)
+      .join(", ")})`;
+  };
+
+  const radialGradient = () => {
+    return `radial-gradient(circle, ${colors
+      .map((color) => `${color.color} ${color.stop}%`)
+      .join(", ")})`;
+  };
+
+  const getNewStop = () => {
+    if (colors.length === 1) return colors[0].stop === 1000 ? 0 : 100;
+
+    return (
+      (colors[colors.length - 1].stop + colors[colors.length - 2].stop) / 2
     );
-    const [selectedColor, setSelectedColor] = useState(0);
-    const [angle, setAngle] = useState(90);
-    const [type, setType] = useState("linear");
-
-    const gradientGenerator = () => {
-        if(type === "linear") {
-            return linearGradient()
-        }
-        return radialGradient()
-    }
-    
-    const linearGradient = () => {
-        return `linear-gradient(${angle}deg, ${colors.map((color) => `${color.color} ${color.stop}%` ).join(', ')}`
-    }
-
-    const radialGradient = () => {
-        return `radial-gradient(circle, ${colors.map((color) => `${color.color} ${color.stop}%` ).join(', ')}`
-    }
+  };
 
   return (
     <div className="flex p-12 gap-x-8">
@@ -55,13 +66,30 @@ const Gradient = () => {
           Pick your colors to generate your gradient colors
         </p>
         <div
-          className="w-full h-32 rounded-md mt-4"
+          className="w-full h-64 rounded-md mt-4"
           style={{
             background: gradientGenerator(),
           }}
         ></div>
+        <Card className="my-4 p-6">
+          <div className="flex justify-between items-center">
+            <code>background: {gradientGenerator()};</code>
+            <MdContentCopy
+              className="cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `background: ${gradientGenerator()};`
+                );
+                toast({
+                  title: "Success",
+                  description: "The gradient has been copied to your clipboard",
+                });
+              }}
+            />
+          </div>
+        </Card>
       </div>
-      <Card className="w-fit rounded-md">
+      <Card className="w-fit">
         <CardHeader>
           <CardTitle>Gradient generator</CardTitle>
           <CardDescription>
@@ -99,7 +127,7 @@ const Gradient = () => {
             onClick={() =>
               setColors([
                 ...colors,
-                { color: uniqolor.random().color, stop: 100 },
+                { color: uniqolor.random().color, stop: getNewStop() },
               ])
             }
           >
@@ -108,7 +136,7 @@ const Gradient = () => {
           <Button
             onClick={() => {
               navigator.clipboard.writeText(
-                `background: ${gradientGenerator()}`
+                `background: ${gradientGenerator()};`
               );
               toast({
                 title: "Success",
@@ -122,6 +150,6 @@ const Gradient = () => {
       </Card>
     </div>
   );
-}
+};
 
 export default Gradient
