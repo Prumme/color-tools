@@ -197,6 +197,7 @@ const Gradient = () => {
                 {
                   type,
                   colors,
+                  angle: type === "linear" ? angle : undefined,
                   id: favourites[favourites.length - 1]?.id + 1 || 0,
                 },
               ];
