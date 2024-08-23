@@ -36,7 +36,7 @@ const Linear = ({
       <div className="flex flex-col gap-y-4">
         <div className="flex gap-x-2">
           <Input
-            className="w-min"
+            className="w-20"
             type="number"
             value={angle}
             onChange={(e) => {
@@ -64,12 +64,13 @@ const Linear = ({
           className="!w-full"
         />
       </div>
-      <div className="grid grid-cols-1 gap-4 mt-4">
+      <div className="grid grid-cols-1 gap-2 md:gap-4 mt-4">
         {colors.map((color: Color, index) => (
-          <div className="grid grid-cols-2 gap-4 mt-4" key={index}>
+          <div className="grid grid-cols-2 gap-2 md:gap-4 mt-4" key={index}>
             <div>
               <Label className="capitalize">Color {index + 1}</Label>
               <Input
+                className="w-28 md:w-32"
                 type="text"
                 value={color.color}
                 onClick={() => setSelectedColor(index)}
@@ -81,10 +82,11 @@ const Linear = ({
               />
             </div>
 
-            <div className="flex items-center gap-x-4">
+            <div className="flex items-center gap-x-2 md:gap-x-4">
               <div>
                 <Label className="capitalize">Stop</Label>
                 <Input
+                  className="w-14"
                   type="text"
                   value={color.stop}
                   onClick={() => setSelectedColor(index)}
@@ -99,7 +101,7 @@ const Linear = ({
                   }}
                 />
               </div>
-              <div className="h-full flex flex-col justify-end">
+              <div className="h-full w-full flex flex-col justify-end">
                 <Button
                   variant="destructive"
                   onClick={() => {

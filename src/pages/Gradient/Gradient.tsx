@@ -81,7 +81,7 @@ const Gradient = () => {
   const [favourites, setFavourites] = useState<Favourite[]>(getFavourites());
 
   return (
-    <div className="flex p-12 gap-x-8">
+    <div className="flex flex-col md:flex-row p-12 gap-x-8">
       <div className="grow">
         <h1 className="text-3xl font-bold">Gradient generator</h1>
         <p className="text-lg text-gray-500">
@@ -94,7 +94,7 @@ const Gradient = () => {
           }}
         ></div>
         <Card className="my-4 p-6">
-          <div className="flex justify-between items-center">
+          <div className="inline md:flex justify-between items-center">
             <code>background: {gradientGenerator()};</code>
             <MdContentCopy
               className="cursor-pointer"
@@ -111,7 +111,7 @@ const Gradient = () => {
           </div>
         </Card>
 
-        <div>
+        <div className="hidden md:block">
           <h2 className="text-2xl font-bold">Favourites</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-12">
             {favourites.map((favourite, index) => (
@@ -135,11 +135,7 @@ const Gradient = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs
-            defaultValue={type}
-            className="w-[400px]"
-            onValueChange={setType}
-          >
+          <Tabs defaultValue={type} onValueChange={setType}>
             <TabsList>
               <TabsTrigger value="linear">Linear</TabsTrigger>
               <TabsTrigger value="radial">Radial</TabsTrigger>
@@ -185,7 +181,7 @@ const Gradient = () => {
               }}
             >
               Copy
-              <MdContentCopy />
+              <MdContentCopy className="hidden md:block" />
             </Button>
           </div>
 
@@ -212,7 +208,8 @@ const Gradient = () => {
               });
             }}
           >
-            Save <FaHeart />
+            <span className="hidden md:block">Save</span>
+            <FaHeart className="block md:hidden lg:block" />
           </Button>
         </CardFooter>
       </Card>
